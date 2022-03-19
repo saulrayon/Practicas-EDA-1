@@ -5,6 +5,10 @@
 #include <assert.h>
 #include <time.h>
 
+//#define DEBUG
+
+#define TAM 10
+#define REPETICIONES 20
 
 typedef struct 
 { 
@@ -33,7 +37,7 @@ void CQueue_MakeEmpty( CQueue* this );
 
 CQueue* CQueue_New( size_t capacity )
 {
-    Queue* q = (Queue*) malloc( sizeof( Queue) ); // pide memoria para el objeto Queue 
+    CQueue* q = (CQueue*) malloc( sizeof( CQueue) ); // pide memoria para el objeto Queue 
     if( NULL != q ) 
     { 
         q->queue = (int *) malloc(sizeof( int ) * capacity ); // pide memoria para el contenedor (arreglo) de la cola 
@@ -56,18 +60,20 @@ CQueue* CQueue_New( size_t capacity )
 
 void CQueue_Delete( CQueue** p_this )
 {
-    assert( *this );//si this es nulo dispara el assert 
+    assert( *p_this );//si this es nulo dispara el assert 
 
-    free( (*this)->queue ); // devuelve la memoria del arreglo 
-    free( *this ); // devuelve la memoria del objeto 
-    *this = NULL; // evitamos futuros problemas 
+    free( (*p_this)->queue ); // devuelve la memoria del arreglo 
+    free( *p_this ); // devuelve la memoria del objeto 
+    *p_this = NULL; // evitamos futuros problemas 
 } 
 
 void CQueue_Enqueue( CQueue* this, int val )
 {
     assert( this->len < this->capacity ); 
     // si el numero de elementos en cola es igual a capacity, entonces tenemos un problema
+    #ifdef DEBUG
     fprintf( stderr, "Encolando en Back: %ld, len= %ld\n", this->back, this->len );
+    #endif
 
     this->queue[ this->back ] = val;
 
@@ -89,8 +95,9 @@ int CQueue_Dequeue( CQueue* this )
     // si len vale cero, entonces la pila esta vacia
 
     int tmp = this->queue[ this->front ];
-
+    #ifdef DEBUG
     fprintf( stderr, "desencolando en front: %ld, len= %ld\n", this->front, this->len );
+    #endif
 
     ++this->front;
 
@@ -106,6 +113,8 @@ int CQueue_Dequeue( CQueue* this )
 
 int CQueue_Peek( CQueue* this )
 {
+    assert( this->len > 0);
+
     return this->queue[ this->front ];
 } 
 
@@ -133,6 +142,53 @@ void CQueue_MakeEmpty( CQueue* this )
 {
     this->front = this->back = this->len = 0;
 }
+
+
+
+
+
+#if 1
+
+int main()  // Driver program 5.1
+{
+    CQueue* fila = CQueue_New( TAM );
+
+    for( size_t i = 0 ; i < REPETICIONES ; ++i)
+    {
+        int n = rand()% 11;
+
+        for ( ; n>0 ; --n)
+        {
+            int val = rand()%100;
+
+            if(CQueue_IsFull( fila ) != true)
+            {
+                CQueue_Enqueue( fila , val );
+            }
+            else
+            {
+                printf("cola llena\n");
+                break;
+            }
+        }
+
+        for(int m = rand()%11 ; m>0 ; --m )
+        {
+            if( CQueue_IsEmpty( fila ) != true)
+            {
+                int val = CQueue_Dequeue( fila );
+                printf("Val= %d\n",val );
+            }
+            else
+            {
+                printf("cola vacia\n");
+                break;
+            }
+        }
+        
+    }
+}
+#endif
 
 
 
