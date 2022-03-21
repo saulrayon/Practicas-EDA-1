@@ -10,7 +10,7 @@
 #define TAM 10
 #define REPETICIONES 20
 
-typedef struct 
+typedef struct          //tipo de dato cola doble
 { 
     int* queue; /**!< Contenedor de la cola. Es un arreglo dinámico de reales. */ 
     size_t front; /**!< Índice al elemento más antiguo */ 
@@ -20,22 +20,21 @@ typedef struct
 } DQueue;
 
 
-
-
-
 DQueue* DQueue_New( size_t capacity ); 
 void DQueue_Delete( DQueue** this ); 
-void DQueue_Enqueue_front(DQueue* this, int val ); 
-void DQueue_Enqueue_back( DQueue* this, int val ); 
-int DQueue_Dequeue_front(DQueue* this ); 
-int DQueue_Dequeue_back( DQueue* this ); 
-int DQueue_Peek_front( DQueue* this ); 
-int DQueue_Peek_back( DQueue* this ); 
-bool DQueue_IsEmpty( DQueue* this );
-bool DQueue_IsFull( DQueue* this ); 
+void DQueue_Enqueue( DQueue* this, int val ); 
+int DQueue_Dequeue( DQueue* this ); 
+int DQueue_Peek( DQueue* this ); 
+void DQueue_Enqueue_prio( DQueue* this, int val ); 
+int DQueue_Dequeue_prio( DQueue* this ); 
+int DQueue_Peek_prio( DQueue* this ); 
+bool DQueue_IsEmpty( DQueue* this ); 
 size_t DQueue_Len( DQueue* this ); 
 size_t DQueue_Capacity( DQueue* this ); 
 void DQueue_MakeEmpty( DQueue* this );
+
+bool DQueue_IsFull( DQueue* this ); 
+
 
 
 DQueue* DQueue_New( size_t capacity )
@@ -70,7 +69,7 @@ void DQueue_Delete( DQueue** this )
     *this = NULL; // evitamos futuros problemas 
 }
 
-void DQueue_Enqueue_front(DQueue* this, int val )
+void DQueue_Enqueue_prio( DQueue* this, int val )
 {
     if(this->front==0)
     {
@@ -85,7 +84,7 @@ void DQueue_Enqueue_front(DQueue* this, int val )
     ++this->len;
 }
 
-void DQueue_Enqueue_back( DQueue* this, int val )
+void DQueue_Enqueue( DQueue* this, int val )
 {
     assert( this->len < this->capacity ); 
     // si el numero de elementos en cola es igual a capacity, entonces tenemos un problema
@@ -106,7 +105,7 @@ void DQueue_Enqueue_back( DQueue* this, int val )
 
 }
 
-int DQueue_Dequeue_front(DQueue* this )
+int DQueue_Dequeue( DQueue* this )
 {
     assert( this->len > 0 ); 
     // si len vale cero, entonces la pila esta vacia
@@ -129,7 +128,7 @@ int DQueue_Dequeue_front(DQueue* this )
     return tmp;
 }
 
-int DQueue_Dequeue_back( DQueue* this )
+int DQueue_Dequeue_prio( DQueue* this )
 {
     assert( this->len > 0 ); 
     // si len vale cero, entonces la pila esta vacia
@@ -147,12 +146,12 @@ int DQueue_Dequeue_back( DQueue* this )
     return this->queue[this->back];
 }
 
-int DQueue_Peek_front( DQueue* this )
+int DQueue_Peek( DQueue* this )
 {
     return this->queue[ this->front ];
 } 
 
-int DQueue_Peek_back( DQueue* this )
+int DQueue_Peek_prio( DQueue* this )
 {
     size_t tmp;
     if(this->back == 0)
@@ -256,5 +255,6 @@ int main()  // Driver program 5.2
         }
         
     }
+    DQueue_Delete(&fila);
 }
 #endif
