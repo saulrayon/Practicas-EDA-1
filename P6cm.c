@@ -7,13 +7,13 @@
 
 #define DEBUG
 
-#define TAM 10
+#define TAM 40
 #define REPETICIONES 20
 
 typedef struct
 {
-  char name[40];  //nombre de la cancion
-  char singer[40]; //cantante
+  char name[TAM];  //nombre de la cancion
+  char singer[TAM]; //cantante
   int year;       //año de la cancion
   int duration;   //duracion de la cancion en segundos  
 }Song;
@@ -41,13 +41,20 @@ size_t CQueue_Capacity( CQueue* this );
 void CQueue_MakeEmpty( CQueue* this );
 
 void print_song(const Song* this);
+void song_Ctor( Song* this, char* name, char* singer, int year, int duration );
 
 void print_song(const Song* this)
 {
     printf("Nombre: %s \nCantante: %s \nAño: %d \nDuracion: %d\n\n",this->name,this->singer,this->year,this->duration);
 }
 
-
+void song_Ctor( Song* this, char* name, char* singer, int year, int duration )
+{
+    strncpy( this->name,name,TAM ); //(destino,fuente,cuantos)
+    strncpy( this->singer,singer,TAM );
+    this->year = year;
+    this->duration = duration;
+}
 
 
 
@@ -83,14 +90,41 @@ void CQueue_Delete( CQueue** p_this )
     *p_this = NULL; // evitamos futuros problemas 
 } 
 
-void CQueue_Enqueue( CQueue* this, Song cancion )
+void CQueue_Enqueue( CQueue* this, Song cancion ) //modificado para que cresca
 {
-    assert( this->len < this->capacity ); 
-    // si el numero de elementos en cola es igual a capacity, entonces tenemos un problema
+    
     #ifdef DEBUG
-    fprintf( stderr, "Encolando en Back: %ld, len= %ld\n", this->back, this->len );
+    fprintf( stderr, "Encolando en Back: %ld, len= %ld\n", this->back, this->len+1 );
     #endif
 
+    /*Si se llega a la capaciad maxima de la cola*/
+    if (this->len== this->capacity) 
+    {
+        this->queue = (Song *) realloc(this->queue , sizeof( Song ) * (this->capacity*2) ); 
+
+        if( NULL != this ) 
+        {
+            this->capacity *= 2;
+            #ifdef DEBUG
+            printf("new capacity=%ld\n",this->capacity);
+            #endif
+        } 
+        else 
+        { 
+        // no se pudo asignar la memoria para el contenedor, 
+        // por lo tanto el objeto debe ser destruído (sin 
+        // contenedor no hay cola) 
+
+        fprintf( stderr, "Fallo al reasignar memoria" );
+
+        free( this );
+        this = NULL; 
+
+        exit(1);
+        } 
+        
+    }
+    
     this->queue[ this->back ] = cancion ;
 
     ++this->back; 
@@ -110,9 +144,9 @@ Song CQueue_Dequeue( CQueue* this )
     assert( this->len > 0 ); 
     // si len vale cero, entonces la pila esta vacia
 
-    Song tmp = this->queue[ this->front ];
+    Song tmp = (this->queue[ this->front ]);
     #ifdef DEBUG
-    fprintf( stderr, "desencolando en front: %ld, len= %ld\n", this->front, this->len );
+    fprintf( stderr, "desencolando en front: %ld, len= %ld\n", this->front, this->len-1 );
     #endif
 
     ++this->front;
@@ -124,10 +158,10 @@ Song CQueue_Dequeue( CQueue* this )
 
     --this->len;
 
-    return (this->queue[ this->front-1 ]);
+    return tmp;
 }
 
-#if 1
+#if 0
 
 int CQueue_Peek( CQueue* this )
 {
@@ -166,5 +200,33 @@ void CQueue_MakeEmpty( CQueue* this )
 
 int main()
 {
+    Song cancion1;
+    song_Ctor(&cancion1,"cancion1","cantante1",1,1);
+
+    Song cancion2;
+    song_Ctor(&cancion2,"cancion2","cantante2",2,2);
+
+    Song cancion3;
+    song_Ctor(&cancion3,"cancion3","cantante3",3,3);
+
+    print_song(&cancion1);
+    print_song(&cancion2);
+    print_song(&cancion3);
+
+    CQueue* lista = CQueue_New( 2 );
+
+    CQueue_Enqueue(lista, cancion3);
+    CQueue_Enqueue(lista, cancion2);
+    CQueue_Enqueue(lista, cancion1);
+
+    for (size_t i = 3; i >0; i--)
+    {
+        Song tmp=CQueue_Dequeue(lista);
+        print_song(&tmp);
+    }
+    
+    
+
+    CQueue_Delete(&lista);
     
 }
