@@ -5,12 +5,12 @@
 #include <assert.h>
 #include <time.h>
 
-//#define DEBUG
+#define DEBUG
 
-#define TAM 10
-#define REPETICIONES 20
+#define SIZE_COLA 10
+#define REPT 3
 
-typedef struct 
+typedef struct // tipo de dato cola circular
 { 
     int* queue; /**!< Contenedor de la cola. Es un arreglo dinámico de reales. */ 
     size_t front; /**!< Índice al elemento más antiguo */ 
@@ -151,9 +151,9 @@ void CQueue_MakeEmpty( CQueue* this )
 
 int main()  // Driver program 5.1
 {
-    CQueue* fila = CQueue_New( TAM );
+    CQueue* fila = CQueue_New( SIZE_COLA ); //SIZE_COLA = 10
 
-    for( size_t i = 0 ; i < REPETICIONES ; ++i)
+    for( size_t i = 0 ; i < REPT ; ++i) //REPT numero de repeticiones: 3
     {
         int n = rand()% 11;
 
@@ -167,7 +167,7 @@ int main()  // Driver program 5.1
             }
             else
             {
-                printf("cola llena\n");
+                printf("<<<El contenedor de la cola se ha llenado>>>\n");
                 break;
             }
         }
@@ -181,12 +181,14 @@ int main()  // Driver program 5.1
             }
             else
             {
-                printf("cola vacia\n");
+                printf("<<<La cola esta vacia>>>\n");
                 break;
             }
         }
         
     }
+    //devolver memoria dinamica
+    CQueue_Delete(&fila);
 }
 #endif
 
