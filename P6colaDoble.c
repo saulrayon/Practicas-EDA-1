@@ -7,8 +7,8 @@
 
 #define DEBUG
 
-#define TAM 10
-#define REPETICIONES 20
+#define SIZE_COLA 10
+#define REPT 3
 
 typedef struct          //tipo de dato cola doble
 { 
@@ -165,7 +165,7 @@ int DQueue_Peek_prio( DQueue* this )
     return this->queue[ tmp ];
 }
 
-bool CQueue_IsEmpty( DQueue* this )
+bool DQueue_IsEmpty( DQueue* this )
 {
     return( this->len == 0 );
 }
@@ -196,11 +196,11 @@ void DQueue_MakeEmpty( DQueue* this )
 
 #if 1
 
-int main()  // Driver program 5.2
+int main()  // Driver program seccion 5.2
 {
-    DQueue* fila = DQueue_New( TAM );
+    DQueue* fila = DQueue_New( SIZE_COLA ); //SIZE_COLA tamaño de la cola: 10
 
-    for( size_t i = 0 ; i < REPETICIONES ; ++i)
+    for( size_t i = 0 ; i < REPT ; ++i)  //REPT numero de repeticiones: 3
     {
         int n = rand()% 11;
 
@@ -214,47 +214,49 @@ int main()  // Driver program 5.2
 
                 if(volado>90)
                 {
-                DQueue_Enqueue_front( fila , val );
-                printf("llego un VIP\n");
+                DQueue_Enqueue_prio( fila , val );
+                printf("<<<llego un VIP>>>\n");
                 }
                 else
                 {
-                    DQueue_Enqueue_back( fila , val );
+                    DQueue_Enqueue( fila , val );
                 }
             }
             else
             {
-                printf("cola llena\n");
+                printf("<<<El contenedor de la cola se ha llenado>>>\n");
                 break;
             }
-        }   // vamos bien hasta aqui
+        }   
 
         for(int m = rand()%11 ; m>0 ; --m )
         {
-            if( CQueue_IsEmpty( fila ) != true)
+            if( DQueue_IsEmpty( fila ) != true)
             {
                 int volado = rand()%100;
 
                 if(volado>90)
                 {
-                    int val = DQueue_Dequeue_back( fila );
+                    int val = DQueue_Dequeue_prio( fila );
                     printf("Val= %d\n",val );
-                    printf("se atendio a un VIP\n");
+                    printf("<<<se atendio a un VIP>>>\n");
                 }
                 else
                 {
-                    int val = DQueue_Dequeue_front( fila );
+                    int val = DQueue_Dequeue( fila );
                     printf("Val= %d\n",val );
                 } 
             }
             else
             {
-                printf("cola vacia\n");
+                printf("<<<La cola esta vacia>>>\n");
                 break;
             }
         }
         
     }
+    //devolver memoria dinamica
     DQueue_Delete(&fila);
 }
 #endif
+
